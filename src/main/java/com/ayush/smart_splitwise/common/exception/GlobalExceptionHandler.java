@@ -56,6 +56,18 @@ public class GlobalExceptionHandler {
                 .body(buildErrorResponse("Invalid Email or Password",HttpStatus.UNAUTHORIZED,request));
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handle(Exception ex,
+                                                HttpServletRequest request) {
+
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(buildErrorResponse(
+                        ex.getMessage(),
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        request
+                ));
+    }
+
     private ErrorResponse buildErrorResponse(String message, HttpStatus status, HttpServletRequest request) {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .timestamp(LocalDateTime.now())

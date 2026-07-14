@@ -10,6 +10,7 @@ import com.ayush.smart_splitwise.core.user.respository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +25,8 @@ public class AuthService {
     private final UserRepository userRepository;
 
     private final AuthenticationManager authenticationManager;
+
+    private final JwtService jwtService;
 
     public RegisterResponse register(RegisterRequest registerRequest) {
         if(!registerRequest.getPassword().equals(registerRequest.getConfirmPassword())) {
@@ -48,12 +51,12 @@ public class AuthService {
     }
 
     public String login(LoginRequest loginRequest) {
-        authenticationManager.authenticate(
+        Authentication authentication=authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getEmail(),
                         loginRequest.getPassword()
                 )
         );
-        return "Login Succesfully";
+        return jwtService.generateToken(loginRequest.getEmail());
     }
 }
