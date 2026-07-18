@@ -1,11 +1,11 @@
 package com.ayush.smart_splitwise.common.exception;
 
-import com.ayush.smart_splitwise.common.exception.custom.EmailAlreadyExistsException;
-import com.ayush.smart_splitwise.common.exception.custom.PasswordMismatchException;
+import com.ayush.smart_splitwise.common.exception.custom.*;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +30,20 @@ public class GlobalExceptionHandler {
                 .body(buildErrorResponse(ex.getMessage(),HttpStatus.CONFLICT,request));
     }
 
+    @ExceptionHandler(MemberAlreadyExistsException.class)
+    public ResponseEntity<ErrorResponse> handleMemberAlreadyExists(MemberAlreadyExistsException ex, HttpServletRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(buildErrorResponse(ex.getMessage(),HttpStatus.BAD_REQUEST,request));
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex, HttpServletRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(buildErrorResponse(ex.getMessage(),HttpStatus.NOT_FOUND,request));
+    }
+
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ErrorResponse> handle(HttpMessageNotReadableException ex, HttpServletRequest request) {
 
@@ -47,6 +61,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .badRequest()
                 .body(buildErrorResponse(message, HttpStatus.BAD_REQUEST,request));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleAccessDenied(AccessDeniedException ex, HttpServletRequest request) {
+        return ResponseEntity
+                .status(HttpStatus.FORBIDDEN)
+                .body(buildErrorResponse(ex.getMessage(),HttpStatus.FORBIDDEN,request));
     }
 
     @ExceptionHandler(BadCredentialsException.class)
